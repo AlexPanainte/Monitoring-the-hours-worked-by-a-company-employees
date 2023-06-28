@@ -1,58 +1,129 @@
-import functii.manipulare_fisiere as fisiere
-import functii.manipulare_utilizatori as user
+import os
+import csv
+
+import schedule
+import time
+from datetime import datetime
+
+import functii.constante as c
+import functii.file as f
+import functii.users as u
+
 import mysql.connector
-import datetime
 connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
 cursor=connect.cursor()
 
-utilizator=user.User()
-file=fisiere.Fisiere_TXT()
-path="PROIECT_Final/Intrari/"
-nume_fisier="Poarta1_"+ str(datetime.date.today())
+# def calcul_ore():
+#     cursor.execute("SELECT * FROM users.ore_lucrate order by ID_PERSOANA")
+#     rows=cursor.fetchall()
+#     index=[]
+#     for i in rows:
+#         if i[0] not in index:
+#             index.append(i[0])
+
+#     for id in index:
+#         ID=id
+#         intrari=[]
+#         iesiri=[]
+
+#         for i in rows:
+#             if i[2]=='in' and i[0]==ID:      
+#                 intrari.append(i[1])
+#         for i in rows:
+#             if i[2]=='out' and i[0]==ID:      
+#                 iesiri.append(i[1])
+
+#         if len(intrari) != len(iesiri):
+#             raise ValueError("Numărul de intrări și ieșiri trebuie să fie același.")
+
+#         numar_ore = 0
+#         numar_minute = 0
+
+#         for intrare, iesire in zip(intrari, iesiri):
+#             try:
+#                 intrare = datetime.strptime(intrare, '%Y-%m-%dT%H:%M:%S.%fZ')
+#                 iesire = datetime.strptime(iesire, '%Y-%m-%dT%H:%M:%S.%fZ')
+#                 diferență = iesire - intrare
+#                 diferență_totală_secunde = diferență.total_seconds()
+#                 diferență_ore = int(diferență_totală_secunde) // 3600
+#                 diferență_minute = int(diferență_totală_secunde % 3600) // 60
+
+#                 numar_ore += diferență_ore
+#                 numar_minute += diferență_minute
+#             except ValueError:
+#                 print("Formatul datelor de intrare sau ieșire este incorect.")
+
+#         print (f"Timpul total de lucru pentru angajatul cu ID-UL:{ID} este {(numar_ore)} ore si {numar_minute} minute ")
 
 
+def verifica_fisier_noi():     
+    old_files = []
 
-def muta_in_acces_poarta1():
+    users=u.User()
+    users.calcul_ore()
+    # schedule.every().day.at('13:27').do(users.calcul_ore())
 
-        lista_continut=[]
-        with open(f"{path}{nume_fisier}" ,"r") as file:
-            reader=file.readlines()
-            for line in reader:
-                linie_split=line.split(",")
-                lista_continut.append(linie_split)
-            for i in lista_continut:
-                ID=i[0]
-                DATA=i[1]
-                SENS=i[2]
-                cursor.execute(f"INSERT INTO ACCES_POARTA1 VALUES ('{ID}','{DATA}','{SENS}');")
-                connect.commit()
-                print("Intrare inregistrata")
+    while True:
+        files = os.listdir(c.path)
+        if len(old_files) != len(files):
+            for new_files in files:  
+                #Citeste si introduce in baza de date ACCES_POARTA1 Continutul fisierelor Poarta1.txt
+                if new_files =="Poarta1.txt":
+                    lista_continut=[]
+                    with open(f"{c.path}Poarta1.txt" ,"r") as file:
+                        reader=file.readlines()
+                        
 
+                        for line in reader:
+                            linie_strip=line.strip("\n ;")
+                            linie_split=linie_strip.split(",")
+                            lista_continut.append(linie_split)
 
-# Aici am un bug care inloc sa imi inregistreze intrarile si iesirile imi creaza prima data un fisier nou de fiecare data 
-# in fisierul manipulare utilizator unde este functia scrisa merge corect 
+                        for i in lista_continut:
+                            ID=i[0]
+                            DATA=i[1] 
+                            SENS=i[2]
+                            cursor.execute(f"INSERT INTO ACCES_POARTA1 VALUES ('{ID}','{DATA}','{SENS}');")
+                            cursor.execute(f"INSERT INTO ORE_LUCRATE VALUES ('{ID}','{DATA}','{SENS}','Poarta1');")
+                            connect.commit()
+                        print("Fisierul TXT a fost adaugat cu succes in baza de date")
+                #Se adauga data curenta la fisierelu Poarta1.txt si este mutat in folderul BACKUP_INTRARI
+                    fTXT=f.Fisiere_TXT()
+                    fTXT.move_and_rename_in_backup_TXT()
 
-# utilizator.inregistrare_intrari_Poarta1(1)
-# utilizator.inregistrare_iesiri_Poarta1(1)
+                #Citeste si introduce in baza de date ACCES_POARTA1 Continutul fisierelor Poarta.csv    
+                if new_files == "Poarta2.csv":
+                    with open(f"{c.path}Poarta2.csv","r") as file:
+                        fisier=csv.reader(file)
+                        next(fisier)
 
+                        for row in fisier:
+                            ID=row[0]
+                            DATA=row[1] 
+                            SENS=row[2]
+                            cursor.execute(f"INSERT INTO ACCES_POARTA2 VALUES ('{ID}','{DATA}','{SENS}');")
+                            cursor.execute(f"INSERT INTO ORE_LUCRATE VALUES ('{ID}','{DATA}','{SENS}','Poarta2');")
+                            connect.commit()            
+                        print("Fisierul CSV a fost adaugat cu succes in baza de date")
+                #Se adauga data curenta la fisierelu Poarta1.txt si este mutat in folderul BACKUP_INTRARI
+                    fCSV=f.Fisiere_CSV()
+                    fCSV.move_and_rename_in_backup_CSV()
 
-def poarta1():
-    # 1-citeste fisierul Poarta1.txt si il returneaza / aceasta functie nu este neaprat necesara aici
-    file.citeste_txt()
-    #2 -Citeste fisierul Poarta1.txt si adauga toate intrarile utilizatorilor in baza de date acces
-    muta_in_acces_poarta1()
-    #3 -Dupa ce au fost adaugate fisierele din Poarta1.txt fisierul este mutat in folderul Backup
-    file.muta_in_backup()
-    #4 -Dupa mutarea fisierului din ziua respectiva se creaza un nou fisier cu data din ziua urmatoare
-    file.scrie_txt()
-poarta1()
+            # Actualizează lista de fișiere inițiale
+            old_files = files    
+        else:
+            print("Nu există fișiere noi.")
+        schedule.run_pending()    
+        time.sleep(3)
+        
+          
+verifica_fisier_noi()
 
-     
 connect.close()
 cursor.close()
 
 
-
+    
 
 
 
