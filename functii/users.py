@@ -1,11 +1,10 @@
 import mysql.connector
-import datetime
+import smtplib, ssl
+from email.message import EmailMessage
 
 connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
 cursor=connect.cursor()
 
-path="PROIECT_Final/Intrari/"
-nume_fisier="Poarta1_"+ str(datetime.date.today())
 
 class User():
    
@@ -27,51 +26,31 @@ class User():
         user=cursor.fetchall()
         for list in user:
             print(list)
+    def send_email(self,angajati):
+        sender_mail = "alexvasluigaming@gmail.com"
+        email_password = "hdlkekhytlzipsqq"
+        email_reciever = "dragosarama595@gmail.com"
 
-    def calcul_ore(self):
-        cursor.execute("SELECT * FROM users.ore_lucrate order by ID_PERSOANA")
-        rows=cursor.fetchall()
-        index=[]
-        for i in rows:
-            if i[0] not in index:
-                index.append(i[0])
+        subject = "SALUT"
+        body = "Următorii angajați nu au lucrat 8 ore:\n\n"
+        for angajat in angajati:
+            body += f"ID: {angajat['ID']}, Ore: {angajat['Ore']}, Minute: {angajat['Minute']}\n"
 
-        for id in index:
-            ID=id
-            intrari=[]
-            iesiri=[]
+        em = EmailMessage()
+        em['From'] = sender_mail
+        em['To'] = email_reciever
+        em['Subject'] = subject
+        em.set_content(body)
 
-            for i in rows:
-                if i[2]=='in' and i[0]==ID:      
-                    intrari.append(i[1])
-            for i in rows:
-                if i[2]=='out' and i[0]==ID:      
-                    iesiri.append(i[1])
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_mail, email_password)
+            server.send_message(em)
+            server.quit()
+        print("Email Sent")
 
-            if len(intrari) != len(iesiri):
-                raise ValueError("Numărul de intrări și ieșiri trebuie să fie același.")
+    
 
-            numar_ore = 0
-            numar_minute = 0
-
-            for intrare, iesire in zip(intrari, iesiri):
-                try:
-                    intrare = datetime.strptime(intrare, '%Y-%m-%dT%H:%M:%S.%fZ')
-                    iesire = datetime.strptime(iesire, '%Y-%m-%dT%H:%M:%S.%fZ')
-                    diferență = iesire - intrare
-                    diferență_totală_secunde = diferență.total_seconds()
-                    diferență_ore = int(diferență_totală_secunde) // 3600
-                    diferență_minute = int(diferență_totală_secunde % 3600) // 60
-
-                    numar_ore += diferență_ore
-                    numar_minute += diferență_minute
-                except ValueError:
-                    print("Formatul datelor de intrare sau ieșire este incorect.")
-
-            print (f"Timpul total de lucru pentru angajatul cu ID-UL:{ID} este {(numar_ore)} ore si {numar_minute} minute ")
-
-            # functiie de trimis email
-            cursor.execute("TRUNCATE ORE_LUCRATE;")
 
 
 connect.close()

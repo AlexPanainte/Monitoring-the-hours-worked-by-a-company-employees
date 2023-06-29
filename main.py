@@ -13,55 +13,63 @@ import mysql.connector
 connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
 cursor=connect.cursor()
 
-# def calcul_ore():
-#     cursor.execute("SELECT * FROM users.ore_lucrate order by ID_PERSOANA")
-#     rows=cursor.fetchall()
-#     index=[]
-#     for i in rows:
-#         if i[0] not in index:
-#             index.append(i[0])
 
-#     for id in index:
-#         ID=id
-#         intrari=[]
-#         iesiri=[]
+def calcul_ore():
+        cursor.execute("SELECT * FROM users.ore_lucrate ORDER BY ID_PERSOANA")
+        rows = cursor.fetchall()
+        index = []
+        for i in rows:
+            if i[0] not in index:
+                index.append(i[0])
 
-#         for i in rows:
-#             if i[2]=='in' and i[0]==ID:      
-#                 intrari.append(i[1])
-#         for i in rows:
-#             if i[2]=='out' and i[0]==ID:      
-#                 iesiri.append(i[1])
+        angajati_nelucrati = []
 
-#         if len(intrari) != len(iesiri):
-#             raise ValueError("Numărul de intrări și ieșiri trebuie să fie același.")
+        for id in index:
+            ID = id
+            intrari = []
+            iesiri = []
 
-#         numar_ore = 0
-#         numar_minute = 0
+            for i in rows:
+                if i[2] == 'in' and i[0] == ID:
+                    intrari.append(i[1])
+                elif i[2] == 'out' and i[0] == ID:
+                    iesiri.append(i[1])
 
-#         for intrare, iesire in zip(intrari, iesiri):
-#             try:
-#                 intrare = datetime.strptime(intrare, '%Y-%m-%dT%H:%M:%S.%fZ')
-#                 iesire = datetime.strptime(iesire, '%Y-%m-%dT%H:%M:%S.%fZ')
-#                 diferență = iesire - intrare
-#                 diferență_totală_secunde = diferență.total_seconds()
-#                 diferență_ore = int(diferență_totală_secunde) // 3600
-#                 diferență_minute = int(diferență_totală_secunde % 3600) // 60
+            if len(intrari) != len(iesiri):
+                raise ValueError("Numărul de intrări și ieșiri trebuie să fie același.")
 
-#                 numar_ore += diferență_ore
-#                 numar_minute += diferență_minute
-#             except ValueError:
-#                 print("Formatul datelor de intrare sau ieșire este incorect.")
+            numar_ore = 0
+            numar_minute = 0
 
-#         print (f"Timpul total de lucru pentru angajatul cu ID-UL:{ID} este {(numar_ore)} ore si {numar_minute} minute ")
-
+            for intrare, iesire in zip(intrari, iesiri):
+                try:
+                    intrare = datetime.strptime(intrare, '%Y-%m-%dT%H:%M:%S.%fZ')
+                    iesire = datetime.strptime(iesire, '%Y-%m-%dT%H:%M:%S.%fZ')
+                    diferenta = iesire - intrare
+                    diferenta_totala_secunde = diferenta.total_seconds()
+                    diferenta_ore = int(diferenta_totala_secunde) // 3600
+                    diferenta_minute = int(diferenta_totala_secunde % 3600) // 60
+                    numar_ore += diferenta_ore
+                    numar_minute += diferenta_minute
+                except ValueError:
+                    print("Formatul datelor de intrare sau ieșire este incorect.")
+            
+            total_minute = numar_ore * 60 + numar_minute
+            if total_minute < 480:  # 8 ore reprezintă 480 de minute
+                angajat = {'ID': ID, 'Ore': numar_ore, 'Minute': numar_minute}
+                angajati_nelucrati.append(angajat)
+            else:
+                print(f"Timpul total de lucru pentru angajatul cu ID-ul {ID} este {numar_ore} ore și {numar_minute} minute.")
+        
+        if angajati_nelucrati:
+            user=u.User()
+            user.send_email(angajati_nelucrati)
+           
 
 def verifica_fisier_noi():     
     old_files = []
 
-    users=u.User()
-    users.calcul_ore()
-    # schedule.every().day.at('13:27').do(users.calcul_ore())
+    schedule.every().day.at('17:52').do(calcul_ore)
 
     while True:
         files = os.listdir(c.path)
