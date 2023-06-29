@@ -18,11 +18,11 @@ def calcul_ore():
         cursor.execute("SELECT * FROM users.ore_lucrate ORDER BY ID_PERSOANA")
         rows = cursor.fetchall()
         index = []
+        angajat_cu_mai_putin_de_8ore_lucrate = []
+
         for i in rows:
             if i[0] not in index:
                 index.append(i[0])
-
-        angajati_nelucrati = []
 
         for id in index:
             ID = id
@@ -45,10 +45,12 @@ def calcul_ore():
                 try:
                     intrare = datetime.strptime(intrare, '%Y-%m-%dT%H:%M:%S.%fZ')
                     iesire = datetime.strptime(iesire, '%Y-%m-%dT%H:%M:%S.%fZ')
+
                     diferenta = iesire - intrare
                     diferenta_totala_secunde = diferenta.total_seconds()
                     diferenta_ore = int(diferenta_totala_secunde) // 3600
                     diferenta_minute = int(diferenta_totala_secunde % 3600) // 60
+
                     numar_ore += diferenta_ore
                     numar_minute += diferenta_minute
                 except ValueError:
@@ -57,19 +59,20 @@ def calcul_ore():
             total_minute = numar_ore * 60 + numar_minute
             if total_minute < 480:  # 8 ore reprezintă 480 de minute
                 angajat = {'ID': ID, 'Ore': numar_ore, 'Minute': numar_minute}
-                angajati_nelucrati.append(angajat)
+                angajat_cu_mai_putin_de_8ore_lucrate.append(angajat)
             else:
                 print(f"Timpul total de lucru pentru angajatul cu ID-ul {ID} este {numar_ore} ore și {numar_minute} minute.")
         
-        if angajati_nelucrati:
+        if angajat_cu_mai_putin_de_8ore_lucrate:
             user=u.User()
-            user.send_email(angajati_nelucrati)
+            user.send_email(angajat_cu_mai_putin_de_8ore_lucrate)
+        # cursor.execute("Truncate ore_lucrate")
            
 
-def verifica_fisier_noi():     
+def verifica_fisier_noi():
+    schedule.every().day.at('17:52').do(calcul_ore)     
     old_files = []
 
-    schedule.every().day.at('17:52').do(calcul_ore)
 
     while True:
         files = os.listdir(c.path)
@@ -105,17 +108,17 @@ def verifica_fisier_noi():
                         fisier=csv.reader(file)
                         next(fisier)
 
-                        for row in fisier:
-                            ID=row[0]
-                            DATA=row[1] 
-                            SENS=row[2]
+                        for line in fisier:
+                            ID=line[0]
+                            DATA=line[1] 
+                            SENS=line[2]
                             cursor.execute(f"INSERT INTO ACCES_POARTA2 VALUES ('{ID}','{DATA}','{SENS}');")
                             cursor.execute(f"INSERT INTO ORE_LUCRATE VALUES ('{ID}','{DATA}','{SENS}','Poarta2');")
                             connect.commit()            
                         print("Fisierul CSV a fost adaugat cu succes in baza de date")
                 #Se adauga data curenta la fisierelu Poarta1.txt si este mutat in folderul BACKUP_INTRARI
                     fCSV=f.Fisiere_CSV()
-                    fCSV.move_and_rename_in_backup_CSV()
+                    fCSV.rename_and_move_in_backup_CSV()
 
             # Actualizează lista de fișiere inițiale
             old_files = files    

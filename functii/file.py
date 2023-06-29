@@ -29,7 +29,7 @@ class Fisiere_CSV():
             for row in reader:
                 return(row)
     
-    def move_and_rename_in_backup_CSV(self):
+    def rename_and_move_in_backup_CSV(self):
         os.rename(c.nume_initial_CSV,c.nume_final_CSV)
         shutil.move(c.nume_final_CSV,c.destination)
 
