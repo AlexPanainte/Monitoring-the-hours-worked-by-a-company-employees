@@ -17,13 +17,13 @@ def verifica_fisier_noi():
         files = os.listdir(c.path)
         if len(old_files) != len(files):
             for new_files in files:  
-                #Citeste si introduce in baza de date ACCES_POARTA1 Continutul fisierelor Poarta1.txt
+                #Citeste si introduce in baza de date ACCES_Porti Continutul fisierului Poarta1.txt
                 if new_files =="Poarta1.txt":
                     txt_file=f.Fisiere_TXT()
                     txt_file.read_txt()
                     txt_file.move_and_rename_in_backup_TXT()
 
-                #Citeste si introduce in baza de date ACCES_POARTA1 Continutul fisierelor Poarta.csv    
+                #Citeste si introduce in baza de date ACCES_PORTI Continutul fisierelor Poarta.csv    
                 if new_files == "Poarta2.csv":
                     csv_file=f.Fisiere_CSV()
                     csv_file.read_csv()
