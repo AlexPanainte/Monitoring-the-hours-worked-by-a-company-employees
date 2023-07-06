@@ -107,12 +107,13 @@ class User():
                     'Recuperare': f"{ore_ramase} ore și {minute_ramase} minute"
                 }
                 angajat_cu_mai_putin_de_8ore_lucrate.append(angajat)
+                print(f"Timpul total de lucru pentru angajatul cu ID-ul {ID} este {numar_ore} ore și {numar_minute} minute.")
             else:
                 print(f"Timpul total de lucru pentru angajatul cu ID-ul {ID} este {numar_ore} ore și {numar_minute} minute.")
             
-        if angajat_cu_mai_putin_de_8ore_lucrate:
-            user=User()
-            user.send_email(angajat_cu_mai_putin_de_8ore_lucrate)
+        # if angajat_cu_mai_putin_de_8ore_lucrate:
+        #     user=User()
+        #     user.send_email(angajat_cu_mai_putin_de_8ore_lucrate)
         
         self.connect.close()
         self.cursor.close()

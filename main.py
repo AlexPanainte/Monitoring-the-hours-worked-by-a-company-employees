@@ -7,9 +7,9 @@ import functii.constante as c
 import functii.file as f
 import functii.users as u
 
-def verifica_fisier_noi():
+def main():
     users=u.User()       
-    schedule.every().day.at('11:27').do(users.calcul_ore)
+    # schedule.every().day.at('11:27').do(users.calcul_ore)
     users.calcul_ore()   
 
     old_files = []
@@ -36,7 +36,7 @@ def verifica_fisier_noi():
         schedule.run_pending()    
         time.sleep(3)
 
-verifica_fisier_noi()   
+main()
 
 
           
