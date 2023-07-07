@@ -10,17 +10,7 @@ class User():
     def __init__(self):
         self.connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
         self.cursor=self.connect.cursor()
-   
-    #1-Functie care inregistreaza utilizatori in baza de date registered_users
-    def user_registration(self,nume,prenume,nume_companie,id_manager):
-        self.nume=nume
-        self.prenume=prenume
-        self.nume_companie=nume_companie
-        self.id_manager=id_manager
-        self.cursor.execute(f"INSERT INTO REGISTERED_USERS VALUES (null,'{self.nume}','{self.prenume}','{self.nume_companie}','{self.id_manager}');")
-        self.connect.commit()
-        print("Utilizator inregistrat")
-
+        
     #2- Functie care arata toti utilizatorii inregistrati in baza de date registered_users
     def show_users(self):
 
