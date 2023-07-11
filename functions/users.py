@@ -2,7 +2,7 @@ import mysql.connector
 import smtplib, ssl
 from email.message import EmailMessage
 from datetime import datetime
-import functii.constante as c
+import functions.constante as c
 
 
 

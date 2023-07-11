@@ -5,9 +5,9 @@ import threading
 import schedule
 import time
 
-import functii.constante as c
-import functii.file as f
-import functii.users as u
+import functions.constante as c
+import functions.file as f
+import functions.users as u
 
 def main():
     users=u.User()       
