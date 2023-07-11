@@ -1,58 +1,60 @@
-import functii.manipulare_fisiere as fisiere
-import functii.manipulare_utilizatori as user
-import mysql.connector
-import datetime
-connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
-cursor=connect.cursor()
+import os
+import subprocess
+import threading
 
-utilizator=user.User()
-file=fisiere.Fisiere_TXT()
-path="PROIECT_Final/Intrari/"
-nume_fisier="Poarta1_"+ str(datetime.date.today())
+import schedule
+import time
+
+import functions.constante as c
+import functions.file as f
+import functions.users as u
+
+def main():
+    users=u.User()       
+    schedule.every().day.at('20:00').do(users.calcul_ore)
+       
+    old_files = []
+    while True:
+        files = os.listdir(c.path)
+        if len(old_files) != len(files):
+            for new_files in files:  
+                
+                if new_files =="Poarta1.txt":
+                    txt_file=f.Fisiere_TXT()
+                    txt_file.read_txt()
+                    txt_file.move_and_rename_in_backup_TXT()
+
+               
+                if new_files == "Poarta2.csv":
+                    csv_file=f.Fisiere_CSV()
+                    csv_file.read_csv()
+                    csv_file.rename_and_move_in_backup_CSV()
+            
+            old_files = files    
+        else:
+            print("Nu există fișiere noi.")
+
+        schedule.run_pending()    
+        time.sleep(3)
+
+def server():
+        subprocess.Popen(["python", "D:\phyton\PROIECT_FINAL\server.py"], bufsize=-1)
 
 
-
-def muta_in_acces_poarta1():
-
-        lista_continut=[]
-        with open(f"{path}{nume_fisier}" ,"r") as file:
-            reader=file.readlines()
-            for line in reader:
-                linie_split=line.split(",")
-                lista_continut.append(linie_split)
-            for i in lista_continut:
-                ID=i[0]
-                DATA=i[1]
-                SENS=i[2]
-                cursor.execute(f"INSERT INTO ACCES_POARTA1 VALUES ('{ID}','{DATA}','{SENS}');")
-                connect.commit()
-                print("Intrare inregistrata")
-
-
-# Aici am un bug care inloc sa imi inregistreze intrarile si iesirile imi creaza prima data un fisier nou de fiecare data 
-# in fisierul manipulare utilizator unde este functia scrisa merge corect 
-
-# utilizator.inregistrare_intrari_Poarta1(1)
-# utilizator.inregistrare_iesiri_Poarta1(1)
-
-
-def poarta1():
-    # 1-citeste fisierul Poarta1.txt si il returneaza / aceasta functie nu este neaprat necesara aici
-    file.citeste_txt()
-    #2 -Citeste fisierul Poarta1.txt si adauga toate intrarile utilizatorilor in baza de date acces
-    muta_in_acces_poarta1()
-    #3 -Dupa ce au fost adaugate fisierele din Poarta1.txt fisierul este mutat in folderul Backup
-    file.muta_in_backup()
-    #4 -Dupa mutarea fisierului din ziua respectiva se creaza un nou fisier cu data din ziua urmatoare
-    file.scrie_txt()
-poarta1()
-
-     
-connect.close()
-cursor.close()
+t1 = threading.Thread(target=server)
+t2 = threading.Thread(target=main)
+t1.start()
+t2.start()
 
 
 
+          
+
+
+
+
+
+    
 
 
 

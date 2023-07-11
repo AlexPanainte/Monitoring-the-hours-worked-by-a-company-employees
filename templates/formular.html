@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formular Înregistrare</title>
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .success-message {
+            text-align: center;
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+
+    <script>
+        function showSuccessMessage() {
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <h1>Formular Înregistrare Utilizator</h1>
+    <form action="/register" method="post">
+        <label for="nume">Nume:</label>
+        <input type="text" id="nume" name="nume" required>
+
+        <label for="prenume">Prenume:</label>
+        <input type="text" id="prenume" name="prenume" required>
+
+        <label for="nume_companie">Nume Companie:</label>
+        <input type="text" id="nume_companie" name="nume_companie" required>
+
+        <label for="id_manager">ID Manager:</label>
+        <input type="text" id="id_manager" name="id_manager" required>
+
+        <input type="submit" value="Submit" onclick="showSuccessMessage()">
+    </form>
+    <button onclick="window.location.href = 'http://127.0.0.1:5000/';">HOME</button>
+
+    <div id="success-message" class="success-message" style="display: none;">
+        Utilizator înregistrat cu succes!
+    </div>
+</body>
+</html>
