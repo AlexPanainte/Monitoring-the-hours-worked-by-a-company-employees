@@ -14,3 +14,9 @@ nume_final_CSV=(f"{path}Poarta2-{(datetime.date.today())}.csv")
 
 #Cale fisier BACKUP
 destination="PROIECT_Final/Backup_Intrari/"
+
+#parola gmail
+password="hdlkekhytlzipsqq"
+
+#email
+email=''

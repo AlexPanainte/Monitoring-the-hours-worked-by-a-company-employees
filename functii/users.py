@@ -2,6 +2,7 @@ import mysql.connector
 import smtplib, ssl
 from email.message import EmailMessage
 from datetime import datetime
+import functii.constante as c
 
 
 
@@ -11,19 +12,10 @@ class User():
         self.connect=mysql.connector.connect(host="localhost",user="root",password="Afd3ufy250137@",database="users")
         self.cursor=self.connect.cursor()
         
-    #2- Functie care arata toti utilizatorii inregistrati in baza de date registered_users
-    def show_users(self):
-
-        select_users="SELECT * FROM REGISTERED_USERS;"
-        self.cursor.execute(select_users)
-        user=self.cursor.fetchall()
-        for list in user:
-            print(list)
-
     def send_email(self,angajati):
         sender_mail = "alexvasluigaming@gmail.com"
-        email_password = "hdlkekhytlzipsqq"
-        email_reciever = 'dragosarama595@gmail.com'
+        email_password = c.password
+        email_reciever = c.email
         
         subject = "SALUT"
         body = "Următorii angajați nu au lucrat 8 ore:\n\n"
@@ -101,9 +93,9 @@ class User():
             else:
                 print(f"Timpul total de lucru pentru angajatul cu ID-ul {ID} este {numar_ore} ore și {numar_minute} minute.")
             
-        # if angajat_cu_mai_putin_de_8ore_lucrate:
-        #     user=User()
-        #     user.send_email(angajat_cu_mai_putin_de_8ore_lucrate)
+        if angajat_cu_mai_putin_de_8ore_lucrate:
+            user=User()
+            user.send_email(angajat_cu_mai_putin_de_8ore_lucrate)
         
         self.connect.close()
         self.cursor.close()
