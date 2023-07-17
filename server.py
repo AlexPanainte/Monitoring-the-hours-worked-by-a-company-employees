@@ -45,10 +45,8 @@ def inregistrare():
         inregistrare=(f"INSERT INTO REGISTERED_USERS VALUES (null,'{nume}','{prenume}','{nume_companie}','{id_manager}');")
         cursor.execute(inregistrare)
         connect.commit()
-
-        persoana=nume +" "+ prenume
-
-    return render_template('formular.html',utilizator=persoana)
+    
+    return render_template('formular.html')
 
 @app.route("/users",methods=["POST","GET"])
 def users():
