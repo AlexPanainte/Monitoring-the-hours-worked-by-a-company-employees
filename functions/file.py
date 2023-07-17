@@ -1,7 +1,7 @@
 import os
 import shutil
 import csv
-import functii.constante as c
+import functions.constante as c
 import mysql.connector
 
 class Fisiere():

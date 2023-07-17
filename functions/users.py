@@ -41,20 +41,20 @@ class User():
         index = []
         angajat_cu_mai_putin_de_8ore_lucrate = []
 
-        for i in rows:
-            if i[0] not in index:
-                index.append(i[0])
+        for angajat in rows:
+            if angajat[0] not in index:
+                index.append(angajat[0])
 
         for id in index:
             ID = id
             intrari = []
             iesiri = []
 
-            for i in rows:
-                if i[2] == 'in' and i[0] == ID:
-                    intrari.append(i[1])
-                elif i[2] == 'out' and i[0] == ID:
-                    iesiri.append(i[1])
+            for persoana in rows:
+                if persoana[2] == 'in' and persoana[0] == ID:
+                    intrari.append(persoana[1])
+                elif persoana[2] == 'out' and persoana[0] == ID:
+                    iesiri.append(persoana[1])
 
             if len(intrari) != len(iesiri):
                 raise ValueError("Numărul de intrări și ieșiri trebuie să fie același.")
