@@ -16,7 +16,7 @@ nume_final_CSV=(f"{path}Poarta2-{(datetime.date.today())}.csv")
 destination="PROIECT_Final/Backup_Intrari/"
 
 #parola gmail
-password="hdlkekhytlzipsqq"
+password=''
 
 #email
 email=''

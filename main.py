@@ -11,7 +11,7 @@ import functions.users as u
 
 def main():
     users=u.User()       
-    schedule.every().day.at('20:00').do(users.calcul_ore)
+    schedule.every().day.at('19:48').do(users.calcul_ore)
        
     old_files = []
     while True:
@@ -45,37 +45,3 @@ t1 = threading.Thread(target=server)
 t2 = threading.Thread(target=main)
 t1.start()
 t2.start()
-
-
-
-          
-
-
-
-
-
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
